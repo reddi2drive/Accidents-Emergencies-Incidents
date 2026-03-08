@@ -2015,14 +2015,27 @@ localStorage.setItem(`r2d_${TEST_SLUG}_last`, String(score));
     show(resultsScreen);
 }
 
+ function renderChoice(choice){
+  if (choice && typeof choice === "object" && choice.img){
+    const lbl = choice.label || choice.text || "";
+    return `
+      <div class="img-option" style="margin-top:6px">
+        <img src="${escapeHtml(choice.img)}" alt="${escapeHtml(lbl)}" style="max-width:120px">
+        ${lbl ? `<div class="img-label">${escapeHtml(lbl)}</div>` : ""}
+      </div>
+    `;
+  }
+  return `<strong>${escapeHtml(String(choice))}</strong>`;
+}
+
 function buildReview(filter = 'all'){
   reviewList.innerHTML = "";
   let shown = 0;
 
   attempt.forEach((q, i) => {
     const p = picked[i];
-    const you = p ? choiceDisplay(q.choices[p.choiceIndex]) : "—";
-    const correct = choiceDisplay(q.choices[q.correct]);
+  const you = p ? renderChoice(q.choices[p.choiceIndex]) : "—";
+const correct = renderChoice(q.choices[q.correct]);
     const ok = p ? (p.choiceIndex === q.correct) : false;
 
     if (filter === "wrong" && ok) return;
@@ -2040,8 +2053,8 @@ function buildReview(filter = 'all'){
       </div>
       ${q.image ? `<img class="q-image review-image${q.largeImage ? " large" : ""}${q.extraLargeImage ? " xlarge" : ""}" alt="Question visual" src="${escapeHtml(q.image)}">` : ""}
       <div class="small" style="margin-top:8px">
-        <div><span class="muted">You chose:</span> <strong>${escapeHtml(you)}</strong></div>
-        <div><span class="muted">Correct:</span> <strong>${escapeHtml(correct)}</strong></div>
+      <div><span class="muted">You chose:</span> ${you}</div>
+<div><span class="muted">Correct:</span> ${correct}</div>
       </div>
       <div class="hint">${escapeHtml(q.explain || "")}</div>
     `;
